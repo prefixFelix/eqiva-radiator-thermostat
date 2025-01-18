@@ -23,8 +23,7 @@ $ mpremote connect /dev/ttyUSB0 cp eqiva.py :/lib/
 These are all the functions that can be used. Example values have been set for demonstration purposes. You can find more details in the `example.py` file. 
 
 ```python
-eq = Eqiva(utc_offset=2)  # utc_offset sets the time zone, in this case UTC+2
-
+eq = eqiva.Eqiva(utc_offset=2)  # utc_offset sets the time zone, in this case UTC+2
 
 # Scan for thermostats in the vicinity
 eq.scan()
@@ -39,28 +38,28 @@ print(eq.get_serial())
 eq.get_status()
 
 # Set manual mode
-eq.set_mode(MODE_MANUAL)
+eq.set_mode(eqiva.MODE_MANUAL)
 
 # Set auto mode
-eq.set_mode(MODE_AUTO)
+eq.set_mode(eqiva.MODE_AUTO)
 
 # Set vacation mode
 eq.set_mode(0, 20.0, 18, 1, 2025, (18, 30))  # 20.0° until 18.01.2025 18:30
 
 # Switch to the comfort temperature
-eq.set_temp(-1, COMFORT)
+eq.set_temp(-1, eqiva.COMFORT)
 
 # Switch to the comfort temperature
-eq.set_temp(0, ECO)
+eq.set_temp(0, eqiva.ECO)
 
 # Set a temperature value - ON=30.0°; OFF=4.5°
 eq.set_temp(22.5)
 
 # Turn on the boost mode
-eq.set_temp(0, BOOST_ON)
+eq.set_temp(0, eqiva.BOOST_ON)
 
 # Turn off the boost mode
-eq.set_temp(0, BOOST_OFF)
+eq.set_temp(0, eqiva.BOOST_OFF)
 
 # Get the timer value of a specific day: MON, TUE, WED, THU, FRI, SAT, SUN
 print(eq.get_timer('FRI'))
