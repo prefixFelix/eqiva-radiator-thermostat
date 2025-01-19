@@ -4,8 +4,8 @@
 
 > [!WARNING]
 > This repository is still work in progress! 
-- Simple MicroPython module (_library_) for communication with an [EQ3 bluetooth radiator thermostat](https:#www.eq-3.de/produkte/eqiva/detail/bluetooth-smart-heizkoerperthermostat.html).
-- Implements **all functions** of the app ([calor BT](https:#play.google.com/store/apps/details?id=de.eq3.ble.android)) and the awesome Python CLI from **[Heckie75](https:#github.com/Heckie75/Eqiva-Smart-Radiator-Thermostat)**!
+- Simple MicroPython module (_library_) for communication with an [EQ3 bluetooth radiator thermostat](https://www.eq-3.de/produkte/eqiva/detail/bluetooth-smart-heizkoerperthermostat.html).
+- Implements **all functions** of the app ([calor BT](https://play.google.com/store/apps/details?id=de.eq3.ble.android)) and the awesome Python CLI from **[Heckie75](https://github.com/Heckie75/Eqiva-Smart-Radiator-Thermostat)**!
 - The repo also contains an implementation of an Eqiva <-> MQTT gateway (with TLS support). 
 
 ## Installation of the Eqiva module
@@ -20,7 +20,7 @@ $ mpremote connect /dev/ttyUSB0 cp eqiva.py :/lib/
 > [!NOTE]
 > The thermostat must be paired with a device once. Either via the app or manually. Otherwise, the ESP32 cannot communicate with the thermostat.
 
-These are all the functions that can be used. Example values have been set for demonstration purposes. You can find more details in the `example.py` file or in the [protocol description](https:#github.com/Heckie75/Eqiva-Smart-Radiator-Thermostat/blob/main/eq-3-radiator-thermostat-api.md) . 
+These are all the functions that can be used. Example values have been set for demonstration purposes. You can find more details in the `example.py` file or in the [protocol description](https://github.com/Heckie75/Eqiva-Smart-Radiator-Thermostat/blob/main/eq-3-radiator-thermostat-api.md) . 
 
 ```python
 eq = eqiva.Eqiva(utc_offset=2)  # utc_offset sets the time zone, in this case UTC+2
