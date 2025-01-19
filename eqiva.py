@@ -247,7 +247,7 @@ class Eqiva:
                 str(((ord(serial[6]) - 48) ^ (ord(serial[0]) - 65)) % 10)  # Fourth digit
         )
 
-        return serial, firmware, pin
+        return [serial, firmware, pin]
 
     def get_status(self):
         """Request a status update from the thermostat."""

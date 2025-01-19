@@ -6,7 +6,7 @@
 > This repository is still work in progress! 
 - Simple MicroPython module (_library_) for communication with an [EQ3 bluetooth radiator thermostat](https://www.eq-3.de/produkte/eqiva/detail/bluetooth-smart-heizkoerperthermostat.html).
 - Implements **all functions** of the app ([calor BT](https://play.google.com/store/apps/details?id=de.eq3.ble.android)) and the awesome Python CLI from **[Heckie75](https://github.com/Heckie75/Eqiva-Smart-Radiator-Thermostat)**!
-- The repo also contains an implementation of an Eqiva <-> MQTT gateway (with TLS support). 
+- The repo also contains an implementation of an **Eqiva <-> MQTT gateway** (with TLS support). 
 
 ## Installation of the Eqiva module
 
@@ -104,30 +104,44 @@ The topic and parameter names are partly inspired by [this](https://github.com/s
 
 ```python
 # ESP subscribes to the topic <DEVICE_NAME>/<mqttid>radin/trv to handle incoming commands
+# Return values (status) get published at <DEVICE_NAME>/<mqttid>radout/status
+
 # Possible payloads:
+# Get serial, firmware version, pin
+{"mac": "00:1A:22:XX:XX:XX", "cmd": "serial"}
+	-> {"info": []}
 # Get status
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "status"}
+	-> status
 # Set mode
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "mode", "params": "auto"}
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "mode", "params": {"temp": 20.0, "time": [19, 1, 2025, 20, 30]}}
+	-> status
 # Set temperature
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "temp", "params": 22.4}
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "temp", "params": "boost_on"}
+	-> status
 # Get timer
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "get_timer", "params": "fri"}
+	-> {"timer": [[], []]}
 # Set timer
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "set_timer", "params": {"day": "fri", "temps_times": [[20.0, 9, 30], [10.0, 10, 0]]}}
+	-> {"day": 0}
 # Set comfort / eco temperature
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "comfort_eco", "params": {"comfort": 22.5, "eco": 10.0}}
+	-> status
 # Set window open temperature
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "window_open", "params": {"temp": 12.5, "duration": 30}}
+	-> status
 # Set offset temperature
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "offset", "params": 3.5}
+	-> status
 # Set offset temperature
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "lock", "params": true}
+	-> status
 # Factory reset
 {"mac": "00:1A:22:XX:XX:XX", "cmd": "reset"}
-# Return values (status) get published at <DEVICE_NAME>/<mqttid>radout/status
+	-> {"info": 0}
 
 # ESP subscribes to the topic <DEVICE_NAME>/<mqttid>radin/scan for device scanning
 # The result get published at <DEVICE_NAME>/<mqttid>radout/devlist
