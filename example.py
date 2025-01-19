@@ -6,7 +6,7 @@ import time
 SSID = '<EDIT>'
 PASSWD = '<EDIT>'
 
-# Connect to WiFi to get cunnrent time via NTP
+# Connect to WiFi to get current time via NTP
 sta_if = network.WLAN(network.WLAN.IF_STA)
 if not sta_if.isconnected():
     print('\nConnecting to WiFi')
@@ -53,7 +53,7 @@ try:
     time.sleep(2)
 
     # Switch to the comfort temperature
-    eq.set_temp(-1, eqiva.COMFORT)
+    eq.set_temp(0, eqiva.COMFORT)
     time.sleep(2)
 
     # Switch to the comfort temperature

@@ -1,1 +1,9 @@
- 
+SSID = ''
+PASSWD = ''
+
+DEVICE_NAME = ''
+MQTT_CLIENT_ID = b''
+MQTT_SERVER = b''
+MQTT_PORT = 0
+MQTT_USER = b''
+MQTT_PASSWD = b''

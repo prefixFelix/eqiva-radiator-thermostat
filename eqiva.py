@@ -39,6 +39,7 @@ class Eqiva:
         self.conn_handle = None
         self.is_connected = False
         self._notification_data = None
+        self.status = None
         self.parse_status = True
         self.utc_offset = utc_offset
 
@@ -131,8 +132,8 @@ class Eqiva:
             conn_handle, value_handle, notify_data = data
             print("Raw data:", ubinascii.hexlify(notify_data))
             if self.parse_status:
-                status = self._parse_status(notify_data)
-                print("Status:", status)
+                self.status = self._parse_status(notify_data)
+                print("Status:", self.status)
             self.parse_status = True
             self._notification_data = notify_data
 
@@ -264,7 +265,10 @@ class Eqiva:
 
         # Write command and wait for notification
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
-        time.sleep(1)  # Wait for notification
+        time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def set_mode(self, mode, temp=-1.0, day=0, month=0, year=0, t=(0, 0)):
         """Switch mode (MANUAL, AUTO, VACATION)."""
@@ -285,6 +289,9 @@ class Eqiva:
             command = bytearray([0x40, mode])
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def set_temp(self, temp, mode=-1):
         """Set target temperature / boost (ON / OFF)."""
@@ -304,6 +311,9 @@ class Eqiva:
 
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def get_timer(self, day):
         """Read timer of a specific day."""
@@ -389,6 +399,7 @@ class Eqiva:
 
         data = list(self._notification_data)
         print("Day: ", data[2])
+        return data[2]
 
     def conf_comfort_eco(self, comfort_temp, eco_temp):
         """Configure comfort and eco temperatures."""
@@ -402,6 +413,9 @@ class Eqiva:
         ])
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def conf_window_open(self, temp, duration):
         """Configure window open mode."""
@@ -419,6 +433,9 @@ class Eqiva:
         ])
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def conf_offset(self, offset):
         """Set temperature offset."""
@@ -431,6 +448,9 @@ class Eqiva:
         command = bytearray([0x13, int((offset + 3.5) * 2)])  # Convert offset to encoded value
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def set_lock(self, lock):
         """Lock the thermostat."""
@@ -440,6 +460,9 @@ class Eqiva:
             command = bytearray([0x80, 0x00])
         self.ble.gattc_write(self.conn_handle, HANDLE_WRITE, command, 1)
         time.sleep(1)
+        if not self.status:
+            raise Exception("Failed to read status")
+        return self.status
 
     def factory_reset(self):
         """Perform a factory rest."""
@@ -453,3 +476,4 @@ class Eqiva:
         data = list(self._notification_data)
         if data[1] == 0:
             print("Performing a factory reset...")
+        return data[1]
