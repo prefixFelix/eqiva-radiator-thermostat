@@ -1,3 +1,6 @@
+# Simple Eqiva radiator thermostat module (MicroPython)
+# v0.2 (c) Copyright prefixFelix 2025
+
 import ntptime
 import network
 import time
@@ -66,9 +69,14 @@ def sub(topic, msg):
     elif topic_str == f'{config.DEVICE_NAME}/radin/trv':
         eq.connect(msg_j['mac'], max_retries=3)
 
+        # Get serial number, firmware version, pin
+        # {"mac": "00:1A:22:XX:XX:XX", "cmd": "serial"}
+        if msg_j['cmd'].lower() == 'serial':
+            res = {"info": eq.get_serial()}
+
         # Get status
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "status"}
-        if msg_j['cmd'].lower() == 'status':
+        elif msg_j['cmd'].lower() == 'status':
             res = eq.get_status()
 
         # Set mode
@@ -109,7 +117,7 @@ def sub(topic, msg):
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "get_timer", "params": "fri"}
         elif msg_j['cmd'].lower() == 'get_timer':
             if isinstance(msg_j['params'], str):
-                res = eq.get_timer(msg_j['params'])
+                res = {"timer": eq.get_timer(msg_j['params'])}
             else:
                 res = {"error": "Unknown parameter"}
 
@@ -117,7 +125,7 @@ def sub(topic, msg):
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "set_timer", "params": {"day": "fri", "temps_times": [...]}}
         elif msg_j['cmd'].lower() == 'set_timer':
             if isinstance(msg_j['params']['temps_times'], list):
-                res = eq.set_timer(msg_j['params']['day'], msg_j['params']['temps_times'])
+                res = {"day": eq.set_timer(msg_j['params']['day'], msg_j['params']['temps_times'])}
             else:
                 res = {"error": "Unknown parameter"}
 
@@ -156,7 +164,7 @@ def sub(topic, msg):
         # Factory reset
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "reset"}
         elif msg_j['cmd'].lower() == 'reset':
-            res = eq.factory_reset()
+            res = {"info": eq.factory_reset()}
 
         # Final
         else:
