@@ -296,10 +296,15 @@ class Eqiva:
     def set_temp(self, temp, mode=-1):
         """Set target temperature / boost (ON / OFF)."""
         if mode != -1:
-            command = bytearray([
-                0x45,
-                mode
-            ])
+            # Comfort / Eco
+            if 0x42 < mode < 0x45:
+                command = bytearray([mode])
+            # Boost
+            else:
+                command = bytearray([
+                        0x45,
+                        mode
+                ])
         else:
             if not 4.5 <= temp <= 30:
                 raise ValueError("Temperature must be between 4.5°C and 30°C")
