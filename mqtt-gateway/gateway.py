@@ -67,7 +67,14 @@ def sub(topic, msg):
                        )
 
     elif topic_str == f'{config.DEVICE_NAME}/radin/trv':
-        eq.connect(msg_j['mac'], max_retries=3)
+        try:
+            eq.connect(msg_j['mac'], max_retries=3)
+        except Exception as e:
+            client.publish(f'{config.DEVICE_NAME}/radout/status'.encode(),
+                       json.dumps({"error": "timeout"}).encode(),
+                       qos=0
+                       )
+            return
 
         # Get serial number, firmware version, pin
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "serial"}
@@ -91,7 +98,7 @@ def sub(topic, msg):
                 t = msg_j['params']['time']
                 res = eq.set_mode(0, msg_j['params']['temp'], t[0], t[1], t[2], (t[3], t[4]))
             else:
-                res = {"error": "Unknown mode"}
+                res = {"error": "unknown_mode"}
 
         # Set temperature
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "temp", "params": 22.4}
@@ -109,9 +116,9 @@ def sub(topic, msg):
                 elif msg_j['params'].lower() == 'boost_off':
                     res = eq.set_temp(0, eqiva.BOOST_OFF)
                 else:
-                    res = {"error": "Unknown mode"}
+                    res = {"error": "unknown_mode"}
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Get timer
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "get_timer", "params": "fri"}
@@ -119,7 +126,7 @@ def sub(topic, msg):
             if isinstance(msg_j['params'], str):
                 res = {"timer": eq.get_timer(msg_j['params'])}
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Set timer
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "set_timer", "params": {"day": "fri", "temps_times": [...]}}
@@ -127,15 +134,15 @@ def sub(topic, msg):
             if isinstance(msg_j['params']['temps_times'], list):
                 res = {"day": eq.set_timer(msg_j['params']['day'], msg_j['params']['temps_times'])}
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Set comfort / eco temperature
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "comfort_eco", "params": {"comfort": 22.5, "eco": 10.0}}
         elif msg_j['cmd'].lower() == 'comfort_eco':
             if isinstance(msg_j['params']['comfort'], float) and isinstance(msg_j['params']['eco'], float):
-                res = eq.conf_comfort_eco(msg_j['params']['eco'], msg_j['params']['comfort'])
+                res = eq.conf_comfort_eco(msg_j['params']['comfort'], msg_j['params']['eco'])
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Set window open temperature
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "window_open", "params": {"temp": 12.5, "duration": 30}}
@@ -143,7 +150,7 @@ def sub(topic, msg):
             if isinstance(msg_j['params']['temp'], float) and isinstance(msg_j['params']['duration'], int):
                 res = eq.conf_window_open(msg_j['params']['temp'], msg_j['params']['duration'])
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Set offset temperature
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "offset", "params": 3.5}
@@ -151,7 +158,7 @@ def sub(topic, msg):
             if isinstance(msg_j['params'], float):
                 res = eq.conf_offset(msg_j['params'])
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Set offset temperature
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "lock", "params": true}
@@ -159,7 +166,7 @@ def sub(topic, msg):
             if isinstance(msg_j['params'], bool):
                 res = eq.set_lock(msg_j['params'])
             else:
-                res = {"error": "Unknown parameter"}
+                res = {"error": "unknown_parameter"}
 
         # Factory reset
         # {"mac": "00:1A:22:XX:XX:XX", "cmd": "reset"}
@@ -169,7 +176,7 @@ def sub(topic, msg):
         # Final
         else:
             print('Unknown command')
-            res = {"error": "Unknown command"}
+            res = {"error": "unknown_command"}
 
         # Publish results
         client.publish(f'{config.DEVICE_NAME}/radout/status'.encode(),
